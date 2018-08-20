@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  branch = "master"
+  digest = "1:92d074a2148753d890ddb1d07b35b8471a6d7860863d4bb7864f689d4d86c7de"
+  name = "github.com/bobappleyard/readline"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "7e300e02d38ee8b418c0b4841877f1845d392328"
+
+[[projects]]
   digest = "1:b24d38b282bacf9791408a080f606370efa3d364e4b5fd9ba0f7b87786d3b679"
   name = "github.com/urfave/cli"
   packages = ["."]
@@ -12,6 +20,9 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = ["github.com/urfave/cli"]
+  input-imports = [
+    "github.com/bobappleyard/readline",
+    "github.com/urfave/cli",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

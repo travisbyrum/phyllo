@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/bobappleyard/readline"
 	"github.com/urfave/cli"
 )
 
@@ -24,13 +25,65 @@ func init() {
 	templates = template.Must(template.ParseGlob("assets/*"))
 }
 
+func getFlagInputs(c *cli.Context) (projectData, error) {
+	t := projectData{}
+
+	if c.NArg() < 1 {
+		return t, cli.NewExitError("Please provide project name", 2)
+	}
+
+	t.Title = c.Args().Get(0)
+
+	if c.String("author") == "" {
+		author, err := readline.String(">Please provide project author:")
+
+		if err != nil {
+			return t, err
+		}
+
+		t.Author = author
+	}
+
+	if c.String("email") == "" {
+		email, err := readline.String(">Please provide author's email: ")
+
+		if err != nil {
+			return t, err
+		}
+
+		t.Email = email
+	}
+
+	if c.String("description") == "" {
+		description, err := readline.String(">Please provide project description: ")
+
+		if err != nil {
+			return t, err
+		}
+
+		t.Description = description
+	}
+
+	return t, nil
+}
+
 //Flags returns the default cli flags for the create subcommand.
 func Flags() []cli.Flag {
 	return []cli.Flag{
 		cli.StringFlag{
-			Name:  "title",
+			Name:  "author, a",
 			Value: "",
-			Usage: "Project title",
+			Usage: "Project author",
+		},
+		cli.StringFlag{
+			Name:  "description, d",
+			Value: "",
+			Usage: "Project description",
+		},
+		cli.StringFlag{
+			Name:  "email, e",
+			Value: "",
+			Usage: "Project email",
 		},
 	}
 }
@@ -48,13 +101,11 @@ func renderTemplate(path string, tmpl string, data projectData) error {
 //Action defines the default helper for the create subcommand.  This function
 //creates the necessary template files and renders them with the provided args.
 func Action(c *cli.Context) error {
-	t := projectData{}
+	t, err := getFlagInputs(c)
 
-	if c.NArg() < 1 {
-		return cli.NewExitError("Please provide project name", 2)
+	if err != nil {
+		return err
 	}
-
-	t.Title = c.Args().Get(0)
 
 	dirs := []string{
 		"tests",
