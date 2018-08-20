@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+flask-restful = "*"
+flask-sqlalchemy = "*"
+webargs = "*"
+click = "*"
+sphinx-swagger = "*"
+gunicorn = "*"
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+tox = "*"
+coverage = "*"
+sphinx = "*"
+sphinx-rtd-theme = "*"
+sphinxcontrib-httpdomain = "*"
+{{.Title}} = {path = ".", editable = true}
+python-dotenv = "*"
+
+[requires]
+python_version = "3.6"

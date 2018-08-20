@@ -35,8 +35,8 @@ func Flags() []cli.Flag {
 	}
 }
 
-func renderTemplate(projectPath string, tmpl string, data projectData) error {
-	templateFile, err := os.Create(filepath.Join(projectPath, tmpl))
+func renderTemplate(path string, tmpl string, data projectData) error {
+	templateFile, err := os.Create(path)
 
 	if err != nil {
 		return err
@@ -56,16 +56,54 @@ func Action(c *cli.Context) error {
 
 	t.Title = c.Args().Get(0)
 
-	err := os.MkdirAll(filepath.Join(t.Title, t.Title), os.ModePerm)
-
-	if err != nil {
-		return err
+	dirs := []string{
+		"tests",
+		"conf",
+		"bin",
+		"docs",
+		t.Title,
+		filepath.Join(t.Title, "resources"),
 	}
 
-	err = renderTemplate(t.Title, "setup.py", t)
+	templateInfoMap := map[string]string{
+		"setup.py":      "setup.py",
+		"setup.cfg":     "setup.cfg",
+		"tox.ini":       "tox.ini",
+		".coveragerc":   ".coveragerc",
+		".gitignore":    ".gitignore",
+		".pylintrc":     ".pylintrc",
+		"Dockerfile":    "Dockefile",
+		"MANIFEST.in":   "MANIFEST.in",
+		"Pipfile":       "Pipfile",
+		"Makefile":      "Makefile",
+		"README.md":     "README.md",
+		"entrypoint.sh": filepath.Join("bin", "entrypoint.sh"),
+		"__init__.py":   filepath.Join(t.Title, "__init__.py"),
+		"common.py":     filepath.Join(t.Title, "common.py"),
+		"config.py":     filepath.Join(t.Title, "config.py"),
+		"extensions.py": filepath.Join(t.Title, "extensions.py"),
+		"models.py":     filepath.Join(t.Title, "models.py"),
+		"resources.py":  filepath.Join(t.Title, "resources", "__init__.py"),
+		"ping.py":       filepath.Join(t.Title, "resources", "ping.py"),
+	}
 
-	if err != nil {
-		return err
+	for _, dir := range dirs {
+		err := os.MkdirAll(filepath.Join(t.Title, dir), os.ModePerm)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	for k, v := range templateInfoMap {
+		path := filepath.Join(t.Title, v)
+
+		err := renderTemplate(path, k, t)
+
+		if err != nil {
+			return err
+		}
+
 	}
 
 	return nil
