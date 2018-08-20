@@ -1,6 +1,7 @@
 package create
 
 import (
+	"fmt"
 	"html/template"
 	"os"
 	"path/filepath"
@@ -25,7 +26,19 @@ func init() {
 	templates = template.Must(template.ParseGlob("assets/*"))
 }
 
+func flagReadDefault(c *cli.Context, name string) (string, error) {
+	if c.String(name) == "" {
+		userPrompt := fmt.Sprintf(">Please provide project %s:", name)
+
+		return readline.String(userPrompt)
+	}
+
+	return c.String(name), nil
+}
+
 func getFlagInputs(c *cli.Context) (projectData, error) {
+	var err error
+
 	t := projectData{}
 
 	if c.NArg() < 1 {
@@ -34,34 +47,19 @@ func getFlagInputs(c *cli.Context) (projectData, error) {
 
 	t.Title = c.Args().Get(0)
 
-	if c.String("author") == "" {
-		author, err := readline.String(">Please provide project author:")
-
-		if err != nil {
-			return t, err
-		}
-
-		t.Author = author
+	t.Author, err = flagReadDefault(c, "author")
+	if err != nil {
+		return t, err
 	}
 
-	if c.String("email") == "" {
-		email, err := readline.String(">Please provide author's email: ")
-
-		if err != nil {
-			return t, err
-		}
-
-		t.Email = email
+	t.Email, err = flagReadDefault(c, "email")
+	if err != nil {
+		return t, err
 	}
 
-	if c.String("description") == "" {
-		description, err := readline.String(">Please provide project description: ")
-
-		if err != nil {
-			return t, err
-		}
-
-		t.Description = description
+	t.Description, err = flagReadDefault(c, "description")
+	if err != nil {
+		return t, err
 	}
 
 	return t, nil
@@ -71,19 +69,21 @@ func getFlagInputs(c *cli.Context) (projectData, error) {
 func Flags() []cli.Flag {
 	return []cli.Flag{
 		cli.StringFlag{
-			Name:  "author, a",
-			Value: "",
-			Usage: "Project author",
+			Name:   "author, a",
+			Value:  "",
+			Usage:  "Project author",
+			EnvVar: "PHYLLO_AUTHOR",
+		},
+		cli.StringFlag{
+			Name:   "email, e",
+			Value:  "",
+			Usage:  "Project email",
+			EnvVar: "PHYLLO_EMAIL",
 		},
 		cli.StringFlag{
 			Name:  "description, d",
 			Value: "",
 			Usage: "Project description",
-		},
-		cli.StringFlag{
-			Name:  "email, e",
-			Value: "",
-			Usage: "Project email",
 		},
 	}
 }
