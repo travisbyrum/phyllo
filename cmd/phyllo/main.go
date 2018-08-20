@@ -13,11 +13,10 @@ const name string = "phyllo"
 
 func main() {
 	app := cli.NewApp()
-	app.Name = name
-	app.Usage = commands.Usage
-	app.Version = commands.Version
-
 	app.Commands = commands.Commands()
+	app.Name = name
+	app.Version = commands.Version
+	app.Usage = commands.Usage
 
 	err := app.Run(os.Args)
 

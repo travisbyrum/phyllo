@@ -1,3 +1,3 @@
-# aor-pdf-gen
+# phyllo
 
-This repo deals with the creation of topline/crosstab pdfs using html templates rendered through [chromium](https://www.chromium.org).
+Command line utility for the quick generation of python apis.
